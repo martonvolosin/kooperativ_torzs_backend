@@ -1,0 +1,56 @@
+const admin = require('firebase-admin');
+const serviceAccount = require('../serviceAccount.json');
+
+const DATABASE_URL = 'https://kooperativ-torzs.firebaseio.com';
+const ENV = 'TEST'; // 'TEST' || 'PRODUCTION' || 'EMULATOR'
+
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: DATABASE_URL
+  });
+
+const ADMIN_AUTH = admin.auth();
+
+// HTTP Status Messages
+const STATUS_201 = 'Created';
+const STATUS_401 = 'Unauthorized';
+const STATUS_400 = 'AlreadyInDatabase';
+
+// ERROR CONSTANTS
+const UNAUTHORIZED_ERROR = 'Unauthorized';
+const ALREADY_IN_DATABASE_ERROR = 'AlreadyInDatabase';
+const VALIDATION_ERROR = 'ValidationError';
+const PROPERTY_REQUIRED_ERROR = 'PropertyRequiredError';
+const NOT_FOUND_ERROR = 'NotFound';
+const FIRESTORE_ERROR = 'FirestoreError';
+const GENERAL_ERROR = 'GeneralError';
+const NO_PROPERTY_ERROR = 'No property: ';
+
+const db = admin.firestore();
+
+module.exports = {
+    STATUS_CODES: {
+        STATUS_201,
+        STATUS_401,
+        STATUS_400,
+    },
+    ERRORS: {
+        UNAUTHORIZED_ERROR,
+        NOT_FOUND_ERROR,
+        PROPERTY_REQUIRED_ERROR,
+        VALIDATION_ERROR,
+        FIRESTORE_ERROR,
+        ALREADY_IN_DATABASE_ERROR,
+        GENERAL_ERROR,
+        NO_PROPERTY_ERROR,
+    },
+    ENVIRONMENT: {
+        env: ENV,
+        testDb: DATABASE_URL,
+    },
+    REFS: {
+        DB: db
+    },
+    ADMIN_AUTH
+}
