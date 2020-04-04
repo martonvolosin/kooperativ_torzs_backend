@@ -14,8 +14,10 @@ const ADMIN_AUTH = admin.auth();
 
 // HTTP Status Messages
 const STATUS_201 = 'Created';
-const STATUS_401 = 'Unauthorized';
+const STATUS_200 = 'OK';
+const STATUS_204 = 'Resource updated';
 const STATUS_400 = 'AlreadyInDatabase';
+const STATUS_401 = 'Unauthorized';
 
 // ERROR CONSTANTS
 const UNAUTHORIZED_ERROR = 'Unauthorized';
@@ -27,13 +29,23 @@ const FIRESTORE_ERROR = 'FirestoreError';
 const GENERAL_ERROR = 'GeneralError';
 const NO_PROPERTY_ERROR = 'No property: ';
 
+// ITEM TYPES
+const ITEM_TYPES = 
+   ['BARTER',
+    'OFFER',
+    'REQUEST',
+    'HELP',]
+
+
 const db = admin.firestore();
 
 module.exports = {
     STATUS_CODES: {
+        STATUS_200,
         STATUS_201,
-        STATUS_401,
+        STATUS_204,
         STATUS_400,
+        STATUS_401,
     },
     ERRORS: {
         UNAUTHORIZED_ERROR,
@@ -52,5 +64,6 @@ module.exports = {
     REFS: {
         DB: db
     },
-    ADMIN_AUTH
+    ADMIN_AUTH,
+    ITEM_TYPES,
 }
