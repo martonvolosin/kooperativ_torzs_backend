@@ -1,5 +1,6 @@
 // POST
 exports.addUser = require('./user/addUserSchema');
+exports.addReview = require('./user/addReviewSchema');
 exports.updateUser = require('./user/updateUserSchema');
 exports.addItem = require('./item/addItemSchema');
 exports.updateItem = require('./item/updateItemSchema');
