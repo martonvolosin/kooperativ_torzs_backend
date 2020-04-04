@@ -15,9 +15,12 @@ const createItem = body => new Promise(async (resolve, reject) => {
 
 const modifyItem = body => new Promise(async (resolve, reject) => {
   try {
-    console.log(`Updating item '${body.itemId}'...`);
+    console.log(`Updating item '${(body.itemId)}'...`);
+    const oldState = (await REFS.COLLECTIONS.ITEMS.doc(body.itemId).get()).data();
     await REFS.COLLECTIONS.ITEMS.doc(body.itemId).update(body);
-    // TODO if still AVAIALABLE, call findMatchingItems
+    if (oldState.status !== ITEM_STATUSES.AVAILABLE && body.status === ITEM_STATUSES.AVAILABLE) {
+      await findMatchingItems(body.itemId);
+    }
     resolve();
   } catch (error) {
     reject(new Error(error.message));
