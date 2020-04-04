@@ -69,7 +69,7 @@ const findMatchingItems = itemId => new Promise(async (resolve, reject) => {
       resolve([]);
     } else {
       const itemsToConsider = [];
-      itemsFromDB.forEach((lofasz) => itemsToConsider.push(lofasz.data()));
+      itemsFromDB.forEach((itemToConsider) => itemsToConsider.push(itemToConsider.data()));
       resolve(itemsToConsider.filter(closerThanMax(item)));
     }
   } catch (error) {
