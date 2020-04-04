@@ -1,4 +1,4 @@
-const { REFS, GEO_DISTANCES } = require('../utils/constants');
+const { REFS, GEO_DISTANCES, ITEM_STATUSES, ITEM_TYPES } = require('../utils/constants');
 const Distance = require('geo-distance');
 
 const createItem = body => new Promise(async (resolve, reject) => {
@@ -58,11 +58,11 @@ const closerThanMax = (item) => {
 const findMatchingItems = itemId => new Promise(async (resolve, reject) => {
   try {
     const item = (await REFS.COLLECTIONS.ITEMS.doc(itemId).get()).data();
-    const otherType = item.type === 'OFFER' ? 'REQUEST' : 'OFFER';
+    const otherType = item.type === ITEM_TYPES.OFFER ? ITEM_TYPES.REQUEST : ITEM_TYPES.OFFER;
     const itemsFromDB = (await REFS.COLLECTIONS.ITEMS
       .where('type', '==', otherType)
       .where('categoryId', '==', item.categoryId)
-      .where('status', '==', 'AVAILABLE')
+      .where('status', '==', ITEM_STATUSES.AVAILABLE)
       .get());
     if (itemsFromDB.empty) {
       resolve([]);
