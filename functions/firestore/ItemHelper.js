@@ -77,7 +77,7 @@ const findMatchingItems = async itemId => {
     const itemsToConsider = [];
     itemsFromDB.forEach((itemToConsider) => itemsToConsider.push(Object.assign(itemToConsider.data(), {id: itemToConsider.id})));
     const itemMatches = itemsToConsider.filter(closerThanMaxAndNotSameUser(item));
-    if (itemMatches.length > 0) {
+    if (itemMatches.length) {
       const matchIds = [];
       for(const itemMatch of itemMatches) {
         const match = {
