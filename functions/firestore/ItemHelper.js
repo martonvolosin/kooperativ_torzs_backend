@@ -1,10 +1,12 @@
-const { REFS, GEO_DISTANCES, ITEM_STATUSES, ITEM_TYPES } = require('../utils/constants');
+const { REFS, GEO_DISTANCES, ITEM_STATUSES, ITEM_TYPES, MATCH_STATUSES } = require('../utils/constants');
 const Distance = require('geo-distance');
 
 const createItem = body => new Promise(async (resolve, reject) => {
   try {
     console.log('Creating new item...');
+    body.status = 'AVAILABLE';
     const result = await REFS.COLLECTIONS.ITEMS.add(body);
+    await findMatchingItems(result.id);
     resolve(result.id);
   } catch (error) {
     reject(new Error(error.message));
@@ -12,10 +14,10 @@ const createItem = body => new Promise(async (resolve, reject) => {
 });
 
 const modifyItem = body => new Promise(async (resolve, reject) => {
-
   try {
     console.log(`Updating item '${body.itemId}'...`);
     await REFS.COLLECTIONS.ITEMS.doc(body.itemId).update(body);
+    // TODO if still AVAIALABLE, call findMatchingItems
     resolve();
   } catch (error) {
     reject(new Error(error.message));
@@ -43,9 +45,9 @@ const fetchItemForUser = userId => new Promise(async (resolve, reject) => {
   }
 });
 
-const closerThanMax = (item) => {
+const closerThanMaxAndNotSameUser = (item) => {
   return otherItem => {
-    if (!item.location || !otherItem.location) {
+    if (item.userId === otherItem.userId || !item.location || !otherItem.location) {
       return false;
     }
     return Distance.between(
@@ -55,31 +57,48 @@ const closerThanMax = (item) => {
   };
 };
 
-const findMatchingItems = itemId => new Promise(async (resolve, reject) => {
-  try {
-    const item = (await REFS.COLLECTIONS.ITEMS.doc(itemId).get()).data();
-    const otherType = item.type === ITEM_TYPES.OFFER ? ITEM_TYPES.REQUEST : ITEM_TYPES.OFFER;
-    const itemsFromDB = (await REFS.COLLECTIONS.ITEMS
-      .where('type', '==', otherType)
-      .where('categoryId', '==', item.categoryId)
-      .where('status', '==', ITEM_STATUSES.AVAILABLE)
-      .get());
-    if (itemsFromDB.empty) {
-      resolve([]);
-    } else {
-      const itemsToConsider = [];
-      itemsFromDB.forEach((itemToConsider) => itemsToConsider.push(itemToConsider.data()));
-      resolve(itemsToConsider.filter(closerThanMax(item)));
+const addMatchesToUser = async (userId, matchIds) => {
+  // TODO transaction
+  const dbMatches = (await REFS.COLLECTIONS.USER.doc(userId).get()).data().matches;
+  const resultMatches = dbMatches ? dbMatches : [];
+  resultMatches.push(...matchIds);
+  REFS.COLLECTIONS.USER.doc(userId).update({matches: resultMatches});
+};
+
+const findMatchingItems = async itemId => {
+  const item = (await REFS.COLLECTIONS.ITEMS.doc(itemId).get()).data();
+  const otherType = item.type === ITEM_TYPES.OFFER ? ITEM_TYPES.REQUEST : ITEM_TYPES.OFFER;
+  const itemsFromDB = (await REFS.COLLECTIONS.ITEMS
+    .where('type', '==', otherType)
+    .where('categoryId', '==', item.categoryId)
+    .where('status', '==', ITEM_STATUSES.AVAILABLE)
+    .get());
+  if (!itemsFromDB.empty) {
+    const itemsToConsider = [];
+    itemsFromDB.forEach((itemToConsider) => itemsToConsider.push(Object.assign(itemToConsider.data(), {id: itemToConsider.id})));
+    const itemMatches = itemsToConsider.filter(closerThanMaxAndNotSameUser(item));
+    if (itemMatches.length) {
+      const matchIds = [];
+      for(const itemMatch of itemMatches) {
+        const match = {
+          offerUserId: item.type === ITEM_TYPES.OFFER ? item.userId : itemMatch.userId,
+          requestUserId: item.type === ITEM_TYPES.REQUEST ? item.userId : itemMatch.userId,
+          offerItemId: item.type === ITEM_TYPES.OFFER ? itemId : itemMatch.id,
+          requestItemId: item.type === ITEM_TYPES.REQUEST ? itemId : itemMatch.id,
+          status: MATCH_STATUSES.OPEN
+        };
+        const result = await REFS.COLLECTIONS.MATCHES.add(match);
+        await addMatchesToUser(itemMatch.userId, [result.id]);
+        matchIds.push(result.id);
+      }
+      await addMatchesToUser(item.userId, matchIds);
     }
-  } catch (error) {
-    reject(new Error(error.message));
   }
-});
+};
 
 module.exports = {
   createItem,
   modifyItem,
   removeItem,
-  fetchItemForUser,
-  findMatchingItems
+  fetchItemForUser
 };

@@ -47,10 +47,21 @@ const ITEM_STATUSES = {
     TAKEN
 };
 
+// MATCH STATUSES
+const OPEN = 'OPEN';
+const ONGOING = 'ONGOING';
+const CLOSED = 'CLOSED';
+const MATCH_STATUSES = {
+    OPEN,
+    ONGOING,
+    CLOSED
+};
+
 const db = admin.firestore();
 
 const items = db.collection('items');
 const user = db.collection('users');
+const matches = db.collection('matches');
 
 module.exports = {
     STATUS_CODES: {
@@ -78,7 +89,8 @@ module.exports = {
         DB: db,
         COLLECTIONS: {
             ITEMS: items,
-            USER: user
+            USER: user,
+            MATCHES: matches
         }
     },
     GEO_DISTANCES: {
@@ -89,4 +101,5 @@ module.exports = {
     ADMIN_AUTH,
     ITEM_TYPES,
     ITEM_STATUSES,
+    MATCH_STATUSES
 };
