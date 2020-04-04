@@ -4,6 +4,7 @@ const {
     COLLECTIONS: { USER },
   },
   ERRORS: { GENERAL_ERROR, NOT_FOUND_ERROR },
+  ADMIN_AUTH
 } = require("../utils/constants");
 
 module.exports.createUser = (body, uid) =>
@@ -25,9 +26,16 @@ module.exports.fetchUser = params =>
     });
   });
 
-module.exports.removeUser = params =>
+module.exports.removeUser = uid =>
   new Promise(async (resolve, reject) => {
-    resolve();
+    const user = await USER.doc(uid).get();
+    if(user.exists) {
+        const successDbDeletion = await USER.doc(uid).delete();
+        const successAuthDeletion = await ADMIN_AUTH.deleteUser(uid);
+        if(successDbDeletion && successAuthDeletion) {
+            return resolve();
+        } return reject(GENERAL_ERROR)
+    } return reject(NOT_FOUND_ERROR)
   });
 
 module.exports.modifyUser = (body, uid) =>
