@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "firebase-admin": "^8.0.0",
     "firebase-functions": "^3.6.0",
+    "geo-distance": "^0.2.0",
     "glob": "^7.1.6",
     "yup": "^0.28.3"
   },

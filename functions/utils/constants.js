@@ -34,7 +34,7 @@ const ITEM_TYPES =
     ['BARTER',
         'OFFER',
         'REQUEST',
-        'HELP',]
+        'HELP',];
 
 // ITEM STATUSES
 const ITEM_STATUSES =
@@ -42,7 +42,7 @@ const ITEM_STATUSES =
         'AVAILABLE',
         'ON_HOLD',
         'TAKEN',
-    ]
+    ];
 
 const db = admin.firestore();
 
@@ -78,7 +78,12 @@ module.exports = {
             USER: user
         }
     },
+    GEO_DISTANCES: {
+        MAX_DISTANCE: '2 km',
+        MAX_LAT_DIFF: 0.018,
+        MAX_LON_DIFF: 0.027
+    },
     ADMIN_AUTH,
     ITEM_TYPES,
     ITEM_STATUSES,
-}
+};
