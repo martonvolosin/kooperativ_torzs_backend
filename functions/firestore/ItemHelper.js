@@ -63,6 +63,7 @@ const findMatchingItems = itemId => new Promise(async (resolve, reject) => {
     const itemsFromDB = (await REFS.COLLECTIONS.ITEMS
       .where('type', '==', otherType)
       .where('categoryId', '==', item.categoryId)
+      .where('status', '==', 'AVAILABLE')
       .get());
     if (itemsFromDB.empty) {
       resolve([]);
