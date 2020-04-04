@@ -71,12 +71,11 @@ const findMatchingItems = async itemId => {
     if (itemMatches.length > 0) {
       const matchIds = [];
       for(const itemMatch of itemMatches) {
-        // TODO set match with the proper data
         const match = {
-          offerUserId: 1,
-          requestUserId: 2,
-          offerItemId: 3,
-          requestItemId: 4,
+          offerUserId: item.type === ITEM_TYPES.OFFER ? item.userId : itemMatch.userId,
+          requestUserId: item.type === ITEM_TYPES.REQUEST ? item.userId : itemMatch.userId,
+          offerItemId: item.type === ITEM_TYPES.OFFER ? item.id : itemMatch.id,
+          requestItemId: item.type === ITEM_TYPES.REQUEST ? item.id : itemMatch.id,
           status: 'TODO'
         };
         const result = await REFS.COLLECTIONS.MATCHES.add(match);
@@ -99,6 +98,5 @@ module.exports = {
   createItem,
   modifyItem,
   removeItem,
-  fetchItemForUser,
-  findMatchingItems
+  fetchItemForUser
 };
