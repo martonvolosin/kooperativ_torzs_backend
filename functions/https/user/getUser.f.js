@@ -3,7 +3,7 @@ const { fetchUser } = require('../../firestore/UserHelper');
 // eslint-disable-next-line
 const getUser = async (req, res, next) => {
   try {
-    const user = await fetchUser(req.params, res);
+    const user = await fetchUser(req.user.uid);
     res.send({ status: 200, payload: user });
   } catch (error) {
     return next(error);

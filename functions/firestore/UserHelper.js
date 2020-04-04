@@ -19,11 +19,12 @@ module.exports.createUser = (body, uid) =>
     }
   });
 
-module.exports.fetchUser = params =>
+module.exports.fetchUser = uid =>
   new Promise(async (resolve, reject) => {
-    resolve({
-      name: "yolo",
-    });
+    const user = await USER.doc(uid).get();
+    if(user) {
+        return resolve(user.data())
+    } return reject(NOT_FOUND_ERROR)
   });
 
 module.exports.removeUser = uid =>
