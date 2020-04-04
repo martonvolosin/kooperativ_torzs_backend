@@ -1,4 +1,4 @@
-const { REFS, GEO_DISTANCES, ITEM_STATUSES, ITEM_TYPES } = require('../utils/constants');
+const { REFS, GEO_DISTANCES, ITEM_STATUSES, ITEM_TYPES, MATCH_STATUSES } = require('../utils/constants');
 const Distance = require('geo-distance');
 
 const createItem = body => new Promise(async (resolve, reject) => {
@@ -76,7 +76,7 @@ const findMatchingItems = async itemId => {
           requestUserId: item.type === ITEM_TYPES.REQUEST ? item.userId : itemMatch.userId,
           offerItemId: item.type === ITEM_TYPES.OFFER ? item.id : itemMatch.id,
           requestItemId: item.type === ITEM_TYPES.REQUEST ? item.id : itemMatch.id,
-          status: 'TODO'
+          status: MATCH_STATUSES.OPEN
         };
         const result = await REFS.COLLECTIONS.MATCHES.add(match);
         // TODO transaction
