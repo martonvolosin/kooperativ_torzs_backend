@@ -46,6 +46,7 @@ const ITEM_STATUSES =
 
 const db = admin.firestore();
 
+const items = db.collection('items');
 const user = db.collection('users');
 
 module.exports = {
@@ -73,6 +74,7 @@ module.exports = {
     REFS: {
         DB: db,
         COLLECTIONS: {
+            ITEMS: items,
             USER: user
         }
     },
