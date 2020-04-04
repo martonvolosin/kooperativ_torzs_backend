@@ -45,28 +45,32 @@ const fetchItemForUser = userId => new Promise(async (resolve, reject) => {
 });
 
 const closerThanMax = (item) => {
-  return otherItem => (
-    Distance.between(
-      {lat: item.lat, lon: item.lon},
-      {lat: otherItem.lat, lon: otherItem.lon}
+  return otherItem => {
+    if (!item.location || !otherItem.location) {
+      return false;
+    }
+    return Distance.between(
+      {lat: item.location.lat, lon: item.location.lon},
+      {lat: otherItem.location.lat, lon: otherItem.location.lon}
     ) < Distance(GEO_DISTANCES.MAX_DISTANCE)
-  );
+  };
 };
 
 const findMatchingItems = itemId => new Promise(async (resolve, reject) => {
   try {
     const item = (await REFS.COLLECTIONS.ITEMS.doc(itemId).get()).data();
     const otherType = item.type === 'OFFER' ? 'REQUEST' : 'OFFER';
-    const itemsToConsider = await REFS.COLLECTIONS.ITEMS
-      .where('lat', '>', item.lat - GEO_DISTANCES.MAX_LAT_DIFF)
-      .where('lat', '<', item.lat + GEO_DISTANCES.MAX_LAT_DIFF)
-      .where('lon', '<', item.lon - GEO_DISTANCES.MAX_LON_DIFF)
-      .where('lon', '<', item.lon + GEO_DISTANCES.MAX_LON_DIFF)
+    const itemsFromDB = (await REFS.COLLECTIONS.ITEMS
       .where('type', '==', otherType)
       .where('categoryId', '==', item.categoryId)
-      .get();
-    itemsToConsider.filter(closerThanMax(item));
-    resolve(itemsToConsider);
+      .get());
+    if (itemsFromDB.empty) {
+      resolve([]);
+    } else {
+      const itemsToConsider = [];
+      itemsFromDB.forEach((lofasz) => itemsToConsider.push(lofasz.data()));
+      resolve(itemsToConsider.filter(closerThanMax(item)));
+    }
   } catch (error) {
     reject(new Error(error.message));
   }
