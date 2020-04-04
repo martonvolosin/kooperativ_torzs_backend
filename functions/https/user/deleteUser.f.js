@@ -12,4 +12,6 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+deleteUser.method = 'delete';
+
 exports = module.exports = deleteUser;
