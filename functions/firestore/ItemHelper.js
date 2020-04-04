@@ -57,6 +57,14 @@ const closerThanMaxAndNotSameUser = (item) => {
   };
 };
 
+const addMatchesToUser = async (userId, matchIds) => {
+  // TODO transaction
+  const dbMatches = (await REFS.COLLECTIONS.USER.doc(userId).get()).data().matches;
+  const resultMatches = dbMatches ? dbMatches : [];
+  resultMatches.push(...matchIds);
+  REFS.COLLECTIONS.USER.doc(userId).update({matches: resultMatches});
+};
+
 const findMatchingItems = async itemId => {
   const item = (await REFS.COLLECTIONS.ITEMS.doc(itemId).get()).data();
   const otherType = item.type === ITEM_TYPES.OFFER ? ITEM_TYPES.REQUEST : ITEM_TYPES.OFFER;
@@ -80,19 +88,10 @@ const findMatchingItems = async itemId => {
           status: MATCH_STATUSES.OPEN
         };
         const result = await REFS.COLLECTIONS.MATCHES.add(match);
-        // TODO transaction
-        const dbMatches = (await REFS.COLLECTIONS.USER.doc(itemMatch.userId).get()).data().matches;
-        const resultMatches = dbMatches ? dbMatches : [];
-        resultMatches.push(result.id);
-        REFS.COLLECTIONS.USER.doc(itemMatch.userId).update({ matches: resultMatches });
+        await addMatchesToUser(itemMatch.userId, [result.id]);
         matchIds.push(result.id);
       }
-      const sourceUser = item.userId;
-      // TODO transaction
-      const dbMatches = (await REFS.COLLECTIONS.USER.doc(sourceUser).get()).data().matches;
-      const resultMatches = dbMatches ? dbMatches : [];
-      resultMatches.push(...matchIds);
-      REFS.COLLECTIONS.USER.doc(sourceUser).update({ matches: resultMatches });
+      await addMatchesToUser(item.userId, matchIds);
     }
   }
 };
