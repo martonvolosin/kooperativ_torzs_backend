@@ -7,8 +7,8 @@ const addItem = async (req, res, next) => {
   body.userId = uid;
   
   try {
-    await createItem(body, res);
-    res.send({ status: 201, message: STATUS_CODES.STATUS_201 });
+    const itemId = await createItem(body, res);
+    res.send({ itemId, status: 201, message: STATUS_CODES.STATUS_201 });
   } catch (error) {
     return next(error);
   }

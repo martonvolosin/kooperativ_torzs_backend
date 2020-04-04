@@ -10,5 +10,5 @@ exports.getItem = require('./emptySchema');
 exports.getOwnItems = require('./emptySchema');
 
 // DELETE
-exports.deletItem = require('./item/deleteItemSchema');
+exports.deleteItem = require('./item/deleteItemSchema');
 exports.deleteUser = require('./emptySchema');
