@@ -21,11 +21,9 @@ module.exports.modifyItem = body => new Promise(async (resolve, reject) => {
 });
 
 module.exports.removeItem = body => new Promise(async (resolve, reject) => {
-  const {
-    name
-  } = body;
   try {
-    console.log('INIT')
+    console.log(`Deleting item '${body.itemId}'...`);
+    await REFS.COLLECTIONS.ITEMS.doc(body.itemId).delete();
     resolve();
   } catch (error) {
     reject(new Error(error.message));
