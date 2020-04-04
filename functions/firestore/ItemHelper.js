@@ -1,4 +1,4 @@
-const { REFS, GEO_DISTANCES, ITEM_STATUSES, ITEM_TYPES, MATCH_STATUSES } = require('../utils/constants');
+const { REFS, GEO_DISTANCES, ITEM_STATUSES, ITEM_TYPES, MATCH_STATUSES, ERRORS } = require('../utils/constants');
 const Distance = require('geo-distance');
 
 const createItem = body => new Promise(async (resolve, reject) => {
@@ -15,9 +15,15 @@ const createItem = body => new Promise(async (resolve, reject) => {
 
 const modifyItem = body => new Promise(async (resolve, reject) => {
   try {
-    console.log(`Updating item '${body.itemId}'...`);
+    console.log(`Updating item '${(body.itemId)}'...`);
+    const oldItem = await REFS.COLLECTIONS.ITEMS.doc(body.itemId).get();
+    if (!oldItem.exists) {
+      reject(ERRORS.NOT_FOUND_ERROR);
+    }
     await REFS.COLLECTIONS.ITEMS.doc(body.itemId).update(body);
-    // TODO if still AVAIALABLE, call findMatchingItems
+    if (oldItem.data().status !== ITEM_STATUSES.AVAILABLE && body.status === ITEM_STATUSES.AVAILABLE) {
+      await findMatchingItems(body.itemId);
+    }
     resolve();
   } catch (error) {
     reject(new Error(error.message));
