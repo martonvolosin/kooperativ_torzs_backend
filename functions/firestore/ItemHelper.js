@@ -5,6 +5,7 @@ const createItem = body => new Promise(async (resolve, reject) => {
   try {
     console.log('Creating new item...');
     const result = await REFS.COLLECTIONS.ITEMS.add(body);
+    await findMatchingItems(result.id);
     resolve(result.id);
   } catch (error) {
     reject(new Error(error.message));
@@ -12,10 +13,10 @@ const createItem = body => new Promise(async (resolve, reject) => {
 });
 
 const modifyItem = body => new Promise(async (resolve, reject) => {
-
   try {
     console.log(`Updating item '${body.itemId}'...`);
     await REFS.COLLECTIONS.ITEMS.doc(body.itemId).update(body);
+    // TODO if still AVAIALABLE, call findMatchingItems
     resolve();
   } catch (error) {
     reject(new Error(error.message));
@@ -55,26 +56,21 @@ const closerThanMax = (item) => {
   };
 };
 
-const findMatchingItems = itemId => new Promise(async (resolve, reject) => {
-  try {
-    const item = (await REFS.COLLECTIONS.ITEMS.doc(itemId).get()).data();
-    const otherType = item.type === ITEM_TYPES.OFFER ? ITEM_TYPES.REQUEST : ITEM_TYPES.OFFER;
-    const itemsFromDB = (await REFS.COLLECTIONS.ITEMS
-      .where('type', '==', otherType)
-      .where('categoryId', '==', item.categoryId)
-      .where('status', '==', ITEM_STATUSES.AVAILABLE)
-      .get());
-    if (itemsFromDB.empty) {
-      resolve([]);
-    } else {
-      const itemsToConsider = [];
-      itemsFromDB.forEach((itemToConsider) => itemsToConsider.push(itemToConsider.data()));
-      resolve(itemsToConsider.filter(closerThanMax(item)));
-    }
-  } catch (error) {
-    reject(new Error(error.message));
+const findMatchingItems = async itemId => {
+  const item = (await REFS.COLLECTIONS.ITEMS.doc(itemId).get()).data();
+  const otherType = item.type === ITEM_TYPES.OFFER ? ITEM_TYPES.REQUEST : ITEM_TYPES.OFFER;
+  const itemsFromDB = (await REFS.COLLECTIONS.ITEMS
+    .where('type', '==', otherType)
+    .where('categoryId', '==', item.categoryId)
+    .where('status', '==', ITEM_STATUSES.AVAILABLE)
+    .get());
+  if (!itemsFromDB.empty) {
+    const itemsToConsider = [];
+    itemsFromDB.forEach((itemToConsider) => itemsToConsider.push(itemToConsider.data()));
+    const matches = itemsToConsider.filter(closerThanMax(item));
+    // TODO save matches
   }
-});
+};
 
 module.exports = {
   createItem,
