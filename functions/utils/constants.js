@@ -8,7 +8,7 @@ const ENV = 'TEST'; // 'TEST' || 'PRODUCTION' || 'EMULATOR'
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: DATABASE_URL
-  });
+});
 
 const ADMIN_AUTH = admin.auth();
 
@@ -30,12 +30,19 @@ const GENERAL_ERROR = 'GeneralError';
 const NO_PROPERTY_ERROR = 'No property: ';
 
 // ITEM TYPES
-const ITEM_TYPES = 
-   ['BARTER',
-    'OFFER',
-    'REQUEST',
-    'HELP',]
+const ITEM_TYPES =
+    ['BARTER',
+        'OFFER',
+        'REQUEST',
+        'HELP',]
 
+// ITEM STATUSES
+const ITEM_STATUSES =
+    [
+        'AVAILABLE',
+        'ON_HOLD',
+        'TAKEN',
+    ]
 
 const db = admin.firestore();
 
@@ -66,4 +73,5 @@ module.exports = {
     },
     ADMIN_AUTH,
     ITEM_TYPES,
+    ITEM_STATUSES,
 }
