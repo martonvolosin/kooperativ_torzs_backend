@@ -12,6 +12,4 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
-deleteUser.method = 'post';
-
 exports = module.exports = deleteUser;
