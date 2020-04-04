@@ -6,7 +6,7 @@ const location = require('../subSchemas/locationSchema');
 module.exports = yup.object().shape({
     body: yup.object().shape({
         categoryId: yup.string().required(),
-        type: yup.mixed().oneOf(ITEM_TYPES),
+        type: yup.mixed().oneOf(Object.values(ITEM_TYPES)),
         quantity: yup.number(),
         unit: yup.string(),
         description: yup.string().required(),

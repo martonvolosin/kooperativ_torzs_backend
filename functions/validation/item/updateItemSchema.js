@@ -9,6 +9,6 @@ module.exports = yup.object().shape({
         unit: yup.string(),
         description: yup.string(),
         counterValue: yup.string(),
-        status: yup.mixed().oneOf(ITEM_STATUSES),
+        status: yup.mixed().oneOf(Object.values(ITEM_STATUSES)),
     })
 });
