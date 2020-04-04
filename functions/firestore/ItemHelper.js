@@ -1,7 +1,7 @@
 const { REFS, GEO_DISTANCES } = require('../utils/constants');
 const Distance = require('geo-distance');
 
-module.exports.createItem = body => new Promise(async (resolve, reject) => {
+const createItem = body => new Promise(async (resolve, reject) => {
   try {
     console.log('Creating new item...')
     const result = await REFS.COLLECTIONS.ITEMS.add(body);
@@ -11,7 +11,7 @@ module.exports.createItem = body => new Promise(async (resolve, reject) => {
   }
 });
 
-module.exports.modifyItem = body => new Promise(async (resolve, reject) => {
+const modifyItem = body => new Promise(async (resolve, reject) => {
   const {
     name
   } = body;
@@ -23,7 +23,7 @@ module.exports.modifyItem = body => new Promise(async (resolve, reject) => {
   }
 });
 
-module.exports.removeItem = body => new Promise(async (resolve, reject) => {
+const removeItem = body => new Promise(async (resolve, reject) => {
   const {
     name
   } = body;
@@ -35,7 +35,7 @@ module.exports.removeItem = body => new Promise(async (resolve, reject) => {
   }
 });
 
-module.exports.fetchItemForUser = userId => new Promise(async (resolve, reject) => {
+const fetchItemForUser = userId => new Promise(async (resolve, reject) => {
   try {
     const result = await REFS.COLLECTIONS.ITEMS.where('userId', '==', userId).get();
     resolve(result);
@@ -44,17 +44,18 @@ module.exports.fetchItemForUser = userId => new Promise(async (resolve, reject) 
   }
 });
 
-function closerThanMax(item) {
+const closerThanMax = (item) => {
   return otherItem => (
     Distance.between(
       {lat: item.lat, lon: item.lon},
       {lat: otherItem.lat, lon: otherItem.lon}
     ) < Distance(GEO_DISTANCES.MAX_DISTANCE)
   );
-}
+};
 
-module.exports.findMatchingItems = item => new Promise(async (resolve, reject) => {
+const findMatchingItems = itemId => new Promise(async (resolve, reject) => {
   try {
+    const item = (await REFS.COLLECTIONS.ITEMS.doc(itemId).get()).data();
     const otherType = item.type === 'OFFER' ? 'REQUEST' : 'OFFER';
     const itemsToConsider = await REFS.COLLECTIONS.ITEMS
       .where('lat', '>', item.lat - GEO_DISTANCES.MAX_LAT_DIFF)
@@ -63,10 +64,18 @@ module.exports.findMatchingItems = item => new Promise(async (resolve, reject) =
       .where('lon', '<', item.lon + GEO_DISTANCES.MAX_LON_DIFF)
       .where('type', '==', otherType)
       .where('categoryId', '==', item.categoryId)
-      .get().data();
+      .get();
     itemsToConsider.filter(closerThanMax(item));
     resolve(itemsToConsider);
   } catch (error) {
     reject(new Error(error.message));
   }
 });
+
+module.exports = {
+  createItem,
+  modifyItem,
+  removeItem,
+  fetchItemForUser,
+  findMatchingItems
+};
