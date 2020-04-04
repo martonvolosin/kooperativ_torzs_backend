@@ -22,7 +22,8 @@ const decodeToken = async (req, res, next) => {
     }
 
     try {
-      await ADMIN_AUTH.verifyIdToken(idToken);
+      const user = await ADMIN_AUTH.verifyIdToken(idToken);
+      req.user = user;
       return next()
     } catch (error) {
       return next(
