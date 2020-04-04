@@ -46,7 +46,7 @@ const ITEM_STATUSES =
 
 const db = admin.firestore();
 
-const USER_REF = db.collection('users');
+const user = db.collection('users');
 
 module.exports = {
     STATUS_CODES: {
@@ -72,7 +72,9 @@ module.exports = {
     },
     REFS: {
         DB: db,
-        USER_REF,
+        COLLECTIONS: {
+            USER: user
+        }
     },
     ADMIN_AUTH,
     ITEM_TYPES,
