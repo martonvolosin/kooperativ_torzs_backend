@@ -4,6 +4,7 @@ const Distance = require('geo-distance');
 const createItem = body => new Promise(async (resolve, reject) => {
   try {
     console.log('Creating new item...');
+    body.status = 'AVAILABLE';
     const result = await REFS.COLLECTIONS.ITEMS.add(body);
     await findMatchingItems(result.id);
     resolve(result.id);
@@ -66,30 +67,33 @@ const findMatchingItems = async itemId => {
     .get());
   if (!itemsFromDB.empty) {
     const itemsToConsider = [];
-    itemsFromDB.forEach((itemToConsider) => itemsToConsider.push(itemToConsider.data()));
+    itemsFromDB.forEach((itemToConsider) => itemsToConsider.push(Object.assign(itemToConsider.data(), {id: itemToConsider.id})));
     const itemMatches = itemsToConsider.filter(closerThanMax(item));
     if (itemMatches.length > 0) {
       const matchIds = [];
       for(const itemMatch of itemMatches) {
+        // TODO check that we didn't match ourselves
         const match = {
           offerUserId: item.type === ITEM_TYPES.OFFER ? item.userId : itemMatch.userId,
           requestUserId: item.type === ITEM_TYPES.REQUEST ? item.userId : itemMatch.userId,
-          offerItemId: item.type === ITEM_TYPES.OFFER ? item.id : itemMatch.id,
-          requestItemId: item.type === ITEM_TYPES.REQUEST ? item.id : itemMatch.id,
+          offerItemId: item.type === ITEM_TYPES.OFFER ? itemId : itemMatch.id,
+          requestItemId: item.type === ITEM_TYPES.REQUEST ? itemId : itemMatch.id,
           status: MATCH_STATUSES.OPEN
         };
         const result = await REFS.COLLECTIONS.MATCHES.add(match);
         // TODO transaction
-        const dbMatches = (await REFS.COLLECTIONS.USER.doc(itemMatch.userId).get()).data().matches ?? [];
-        dbMatches.push(result.id);
-        REFS.COLLECTIONS.USER.doc(itemMatch.userId).update({ matches: dbMatches });
+        const dbMatches = (await REFS.COLLECTIONS.USER.doc(itemMatch.userId).get()).data().matches;
+        const resultMatches = dbMatches ? dbMatches : [];
+        resultMatches.push(result.id);
+        REFS.COLLECTIONS.USER.doc(itemMatch.userId).update({ matches: resultMatches });
         matchIds.push(result.id);
       }
       const sourceUser = item.userId;
       // TODO transaction
-      const dbMatches = (await REFS.COLLECTIONS.USER.doc(sourceUser).get()).data().matches ?? [];
-      dbMatches.push(...matchIds);
-      REFS.COLLECTIONS.USER.doc(sourceUser).update({ matches: dbMatches });
+      const dbMatches = (await REFS.COLLECTIONS.USER.doc(sourceUser).get()).data().matches;
+      const resultMatches = dbMatches ? dbMatches : [];
+      resultMatches.push(...matchIds);
+      REFS.COLLECTIONS.USER.doc(sourceUser).update({ matches: resultMatches });
     }
   }
 };
