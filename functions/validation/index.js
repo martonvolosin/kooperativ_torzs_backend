@@ -7,6 +7,7 @@ exports.updateItem = require('./item/updateItemSchema');
 // GET
 exports.getUser = require('./emptySchema');
 exports.getItem = require('./emptySchema');
+exports.getOwnItems = require('./emptySchema');
 
 // DELETE
 exports.deletItem = require('./item/deleteItemSchema');

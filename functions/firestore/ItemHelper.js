@@ -36,7 +36,9 @@ const removeItem = body => new Promise(async (resolve, reject) => {
 
 const fetchItemForUser = userId => new Promise(async (resolve, reject) => {
   try {
-    const result = await REFS.COLLECTIONS.ITEMS.where('userId', '==', userId).get();
+    const querySnapshot = await REFS.COLLECTIONS.ITEMS.where('userId', '==', userId).get();
+    const result = [];
+    querySnapshot.forEach((item) => result.push(item.data()));
     resolve(result);
   } catch (error) {
     reject(new Error(error.message));
