@@ -45,9 +45,9 @@ const fetchItemForUser = userId => new Promise(async (resolve, reject) => {
   }
 });
 
-const closerThanMax = (item) => {
+const closerThanMaxAndNotSameUser = (item) => {
   return otherItem => {
-    if (!item.location || !otherItem.location) {
+    if (item.userId === otherItem.userId || !item.location || !otherItem.location) {
       return false;
     }
     return Distance.between(
@@ -68,11 +68,10 @@ const findMatchingItems = async itemId => {
   if (!itemsFromDB.empty) {
     const itemsToConsider = [];
     itemsFromDB.forEach((itemToConsider) => itemsToConsider.push(Object.assign(itemToConsider.data(), {id: itemToConsider.id})));
-    const itemMatches = itemsToConsider.filter(closerThanMax(item));
+    const itemMatches = itemsToConsider.filter(closerThanMaxAndNotSameUser(item));
     if (itemMatches.length > 0) {
       const matchIds = [];
       for(const itemMatch of itemMatches) {
-        // TODO check that we didn't match ourselves
         const match = {
           offerUserId: item.type === ITEM_TYPES.OFFER ? item.userId : itemMatch.userId,
           requestUserId: item.type === ITEM_TYPES.REQUEST ? item.userId : itemMatch.userId,
