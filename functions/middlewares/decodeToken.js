@@ -16,7 +16,7 @@ const decodeToken = async (req, res, next) => {
     // for testing purposes
     if (idToken === '12345678') {
       req.user = {
-        uid: 'gKZRPJOskOgVI477lUihL3RswLe2',
+        uid: 'vdQ0gQsA85hFjiT5rP0kfictwbi1',
       };
       return next()
     }
