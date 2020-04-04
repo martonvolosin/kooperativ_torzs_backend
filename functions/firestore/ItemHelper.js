@@ -80,13 +80,16 @@ const findMatchingItems = async itemId => {
           status: 'TODO'
         };
         const result = await REFS.COLLECTIONS.MATCHES.add(match);
-        // TODO write matchId to other user's matches list
+        // TODO transaction
+        const dbMatches = (await REFS.COLLECTIONS.USER.doc(itemMatch.userId).get()).data().matches ?? [];
+        dbMatches.push(result.id);
+        REFS.COLLECTIONS.USER.doc(itemMatch.userId).update({ matches: dbMatches });
         matchIds.push(result.id);
       }
       const sourceUser = item.userId;
       // TODO transaction
       const dbMatches = (await REFS.COLLECTIONS.USER.doc(sourceUser).get()).data().matches ?? [];
-      dbMatches.push(matchIds);
+      dbMatches.push(...matchIds);
       REFS.COLLECTIONS.USER.doc(sourceUser).update({ matches: dbMatches });
     }
   }
