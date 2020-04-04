@@ -3,7 +3,7 @@ const Distance = require('geo-distance');
 
 const createItem = body => new Promise(async (resolve, reject) => {
   try {
-    console.log('Creating new item...')
+    console.log('Creating new item...');
     const result = await REFS.COLLECTIONS.ITEMS.add(body);
     resolve(result.id);
   } catch (error) {
@@ -12,11 +12,10 @@ const createItem = body => new Promise(async (resolve, reject) => {
 });
 
 const modifyItem = body => new Promise(async (resolve, reject) => {
-  const {
-    name
-  } = body;
+
   try {
-    console.log('INIT')
+    console.log(`Updating item '${body.itemId}'...`);
+    await REFS.COLLECTIONS.ITEMS.doc(body.itemId).update(body);
     resolve();
   } catch (error) {
     reject(new Error(error.message));

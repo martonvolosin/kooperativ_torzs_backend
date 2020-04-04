@@ -2,6 +2,7 @@
 exports.addUser = require('./user/addUserSchema');
 exports.updateUser = require('./user/updateUserSchema');
 exports.addItem = require('./item/addItemSchema');
+exports.updateItem = require('./item/updateItemSchema');
 
 // GET
 exports.getUser = require('./emptySchema');

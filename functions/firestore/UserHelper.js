@@ -6,12 +6,13 @@ const {
   ERRORS: { GENERAL_ERROR, NOT_FOUND_ERROR },
 } = require("../utils/constants");
 
-module.exports.createUser = body =>
+module.exports.createUser = (body, uid) =>
   new Promise(async (resolve, reject) => {
-    const { name } = body;
     try {
-      console.log("INIT");
-      resolve();
+      const success = await USER.doc(uid).set(Object.assign({userId: uid}, body));
+      if(success) {
+          resolve()
+      }
     } catch (error) {
       reject(new Error(error.message));
     }

@@ -3,8 +3,9 @@ const { STATUS_CODES } = require('../../utils/constants');
 
 // eslint-disable-next-line
 const addUser = async (req, res, next) => {
+  const { body, user: { uid }} = req;
   try {
-    await createUser(req.body, res);
+    await createUser(body, uid);
     res.send({ status: 201, message: STATUS_CODES.STATUS_201 });
   } catch (error) {
     return next(error);
