@@ -56,7 +56,7 @@ function closerThanMax(item) {
 module.exports.findMatchingItems = item => new Promise(async (resolve, reject) => {
   try {
     const otherType = item.type === 'OFFER' ? 'REQUEST' : 'OFFER';
-    const itemsToConsider = await itemsRef
+    const itemsToConsider = await REFS.COLLECTIONS.ITEMS
       .where('lat', '>', item.lat - GEO_DISTANCES.MAX_LAT_DIFF)
       .where('lat', '<', item.lat + GEO_DISTANCES.MAX_LAT_DIFF)
       .where('lon', '<', item.lon - GEO_DISTANCES.MAX_LON_DIFF)
