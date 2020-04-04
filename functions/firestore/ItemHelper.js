@@ -67,8 +67,27 @@ const findMatchingItems = async itemId => {
   if (!itemsFromDB.empty) {
     const itemsToConsider = [];
     itemsFromDB.forEach((itemToConsider) => itemsToConsider.push(itemToConsider.data()));
-    const matches = itemsToConsider.filter(closerThanMax(item));
-    // TODO save matches
+    const itemMatches = itemsToConsider.filter(closerThanMax(item));
+    if (itemMatches.length > 0) {
+      const matchIds = [];
+      for(const itemMatch of itemMatches) {
+        // TODO set match with the proper data
+        const match = {
+          offerUserId: 1,
+          requestUserId: 2,
+          offerItemId: 3,
+          requestItemId: 4,
+          status: 'TODO'
+        };
+        const result = await REFS.COLLECTIONS.MATCHES.add(match);
+        // TODO write matchId to other user's matches list
+        matchIds.push(result.id);
+      }
+      const sourceUser = item.userId;
+      // TODO transaction
+      const dbMatches = (await REFS.COLLECTIONS.USER.doc(sourceUser).get()).data().matches ?? [];
+      REFS.COLLECTIONS.USER.doc(sourceUser).set({ matches: dbMatches });
+    }
   }
 };
 
