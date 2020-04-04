@@ -1,6 +1,6 @@
 const yup = require("yup");
 
-module.exports = yup.object.shape({
+module.exports = yup.object().shape({
     query: yup.object().shape({
         userId: yup.string().required()
     }),
