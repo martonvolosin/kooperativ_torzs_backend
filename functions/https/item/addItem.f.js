@@ -4,7 +4,7 @@ const { STATUS_CODES } = require('../../utils/constants');
 // eslint-disable-next-line
 const addItem = async (req, res, next) => {
   const { body } = req;
-  body.userId = req.user.id;
+  body.userId = req.user.uid;
   
   try {
     await createItem(body, res);
