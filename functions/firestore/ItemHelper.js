@@ -86,7 +86,7 @@ const findMatchingItems = async itemId => {
       const sourceUser = item.userId;
       // TODO transaction
       const dbMatches = (await REFS.COLLECTIONS.USER.doc(sourceUser).get()).data().matches ?? [];
-      REFS.COLLECTIONS.USER.doc(sourceUser).set({ matches: dbMatches });
+      REFS.COLLECTIONS.USER.doc(sourceUser).update({ matches: dbMatches });
     }
   }
 };
