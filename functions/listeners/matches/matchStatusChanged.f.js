@@ -32,6 +32,10 @@ module.exports = functions.firestore.document('matches/{matchId}').onUpdate(asyn
         await ITEMS.doc(requestItemId).update({ status: ITEM_STATUSES.ON_HOLD });
         await ITEMS.doc(offerItemId).update({ status: ITEM_STATUSES.ON_HOLD });
     }
+    if(newStatus === OPEN) {
+        await ITEMS.doc(requestItemId).update({ status: ITEM_STATUSES.AVAILABLE });
+        await ITEMS.doc(offerItemId).update({ status: ITEM_STATUSES.AVAILABLE });
+    }
 
     // closing chat if the transaction is done
     if([OPEN, CLOSED].includes(newStatus) && chatRef.exists) {
