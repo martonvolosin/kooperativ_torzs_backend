@@ -4,7 +4,7 @@ const { fetchMatch } = require('../../firestore/MatchHelper');
 const getMatch = async (req, res, next) => {
   try {
     console.dir(req.headers);
-    const match = await fetchMatch(req.headers.matchid);
+    const match = await fetchMatch(req.headers.matchid, req.user.uid);
     res.send({ status: 200, payload: match });
   } catch (error) {
     return next(error);
