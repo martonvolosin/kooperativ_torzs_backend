@@ -7,11 +7,8 @@ const {
   ADMIN_AUTH
 } = require("../utils/constants");
 
-const calculateReview = (previousFeedbackScore, newReview) => {
-  const initScore = previousFeedbackScore > 0
-    ? previousFeedbackScore
-    : 10;
-  return (initScore + (Object.values(newReview).filter(fb => fb === true)).length * 3) / 2;
+const calculateReview = (reviews) => {
+  return Object.values(reviews).reduce((a, b) => a + b) / Object.keys(reviews).length;
 };
 
 const createUser = (body, uid) =>
@@ -31,10 +28,18 @@ const createReview = (body, uid) =>
     try {
       const user = await USER.doc(uid).get();
       if (user.exists) {
-        const updatedReview = calculateReview(user.data().feedbackScore, body);
+        const previousReviews = user.data().reviews && user.data().reviews.length
+          ? user.data().reviews
+          : {};
+        //TODO: transaction ID
+        const newReviews = { '1122334455': ((Object.values(body).filter(fb => fb === true)).length * 3 + 1) };
+        Object.assign(newReviews, previousReviews);
+        console.log(newReviews);
         // TODO: update other user's ID
-        await USER.doc(uid).update({"feedbackScore": updatedReview});
-        resolve(user.data());
+        await USER.doc(uid).update({"reviews": newReviews});
+        const feedbackScore = calculateReview(newReviews);
+        console.log(feedbackScore);
+        resolve();
       }
     } catch (error) {
       reject(new Error(error.message));
