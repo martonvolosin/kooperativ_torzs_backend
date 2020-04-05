@@ -1,7 +1,7 @@
 // DATABASE CONNECTED BUSINESS LOGIC
 const {
   REFS: {
-    COLLECTIONS: { USER },
+    COLLECTIONS: { MATCHES, USER },
   },
   ERRORS: { GENERAL_ERROR, NOT_FOUND_ERROR },
   ADMIN_AUTH
@@ -26,19 +26,22 @@ const createUser = (body, uid) =>
 const createReview = (body, uid) =>
   new Promise(async (resolve, reject) => {
     try {
-      const user = await USER.doc(uid).get();
-      if (user.exists) {
-        const previousReviews = user.data().reviews && user.data().reviews.length
-          ? user.data().reviews
+      const { matchId } = body;
+      const match = (await MATCHES.doc(matchId).get()).data();
+      const otherUserId = match.offerUserId === uid
+        ? match.requestUserId
+        : match.offerUserId;
+
+      const otherUser = await USER.doc(otherUserId).get();
+      if (otherUser.exists) {
+        const previousReviews = otherUser.data().reviews
+          ? otherUser.data().reviews
           : {};
-        //TODO: transaction ID
-        const newReviews = { '1122334455': ((Object.values(body).filter(fb => fb === true)).length * 3 + 1) };
+        const newReviews = { [matchId]: ((Object.values(body).filter(fb => fb === true)).length * 3 + 1) };
         Object.assign(newReviews, previousReviews);
-        console.log(newReviews);
-        // TODO: update other user's ID
-        await USER.doc(uid).update({"reviews": newReviews});
+        await USER.doc(otherUserId).update({"reviews": newReviews});
         const feedbackScore = calculateReview(newReviews);
-        console.log(feedbackScore);
+        await USER.doc(otherUserId).update({"feedbackScore": feedbackScore});
         resolve();
       }
     } catch (error) {

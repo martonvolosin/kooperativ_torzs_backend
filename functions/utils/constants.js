@@ -51,6 +51,7 @@ const db = admin.firestore();
 
 const items = db.collection('items');
 const user = db.collection('users');
+const matches = db.collection('matches');
 
 module.exports = {
     STATUS_CODES: {
@@ -78,7 +79,8 @@ module.exports = {
         DB: db,
         COLLECTIONS: {
             ITEMS: items,
-            USER: user
+            USER: user,
+            MATCHES: matches,
         }
     },
     GEO_DISTANCES: {
