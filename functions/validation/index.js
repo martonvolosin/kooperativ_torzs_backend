@@ -10,6 +10,7 @@ exports.getUser = require('./emptySchema');
 exports.getItem = require('./emptySchema');
 exports.getOwnItems = require('./emptySchema');
 exports.getCategories = require('./emptySchema');
+exports.getMatch = require('./emptySchema');
 
 // DELETE
 exports.deleteItem = require('./item/deleteItemSchema');
