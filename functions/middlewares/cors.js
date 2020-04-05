@@ -1,6 +1,8 @@
 const whitelist = [
     'http://localhost:3000',
     /localhost:3000$/,
+    'kooperativ-torzs.web.app',
+    /kooperativ-torzs.web.app$/
   ];
   const cors = require('cors')({
     origin: whitelist,
