@@ -90,7 +90,7 @@ module.exports = {
         COLLECTIONS: {
             ITEMS: items,
             USER: user,
-            MATCHES: matches
+            MATCHES: matches,
         }
     },
     GEO_DISTANCES: {
