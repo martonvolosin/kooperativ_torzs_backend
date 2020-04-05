@@ -93,7 +93,9 @@ const findMatchingItems = async itemId => {
           requestItemId: item.type === ITEM_TYPES.REQUEST ? itemId : itemMatch.id,
           status: MATCH_STATUSES.OPEN
         };
+        //eslint-disable-next-line
         const result = await REFS.COLLECTIONS.MATCHES.add(match);
+        //eslint-disable-next-line
         await addMatchesToUser(itemMatch.userId, [result.id]);
         matchIds.push(result.id);
       }

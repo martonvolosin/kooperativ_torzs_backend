@@ -58,6 +58,8 @@ const MATCH_STATUSES = {
 };
 
 const db = admin.firestore();
+const realTimeDb = admin.database();
+const chatRef = admin.database().ref('Chats');
 
 const items = db.collection('items');
 const user = db.collection('users');
@@ -87,6 +89,10 @@ module.exports = {
     },
     REFS: {
         DB: db,
+        REAL_TIME: realTimeDb,
+        RT_REFS: {
+            CHAT: chatRef,
+        },
         COLLECTIONS: {
             ITEMS: items,
             USER: user,
