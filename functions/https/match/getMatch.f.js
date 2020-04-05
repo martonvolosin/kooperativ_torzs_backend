@@ -1,7 +1,7 @@
 const { fetchMatch } = require('../../firestore/MatchHelper');
 
 // eslint-disable-next-line
-const getUser = async (req, res, next) => {
+const getMatch = async (req, res, next) => {
   try {
     console.dir(req.headers);
     const match = await fetchMatch(req.headers.matchid);
@@ -11,6 +11,6 @@ const getUser = async (req, res, next) => {
   }
 };
 
-getUser.method = 'get';
+getMatch.method = 'get';
 
-exports = module.exports = getUser;
+exports = module.exports = getMatch;
