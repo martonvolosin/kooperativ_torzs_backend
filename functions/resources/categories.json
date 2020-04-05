@@ -266,6 +266,28 @@
 					"name": "soft_drinks"
 				}
 			]
+		},
+		{
+			"id": "8",
+			"value": "Tisztítószerek és védőfelszerelés",
+			"name": "cleaning_and_protection",
+			"children": [
+				{
+					"id": "801",
+					"value": "Védőmaszk",
+					"name": "mask"
+				},
+				{
+					"id": "802",
+					"value": "Gumikesztyű",
+					"name": "robber_gloves"
+				},
+				{
+					"id": "803",
+					"value": "Fertőtlenítőszer",
+					"name": "disinfectant"
+				}
+			]
 		}
 	]
 }
