@@ -47,6 +47,16 @@ const ITEM_STATUSES = {
     TAKEN
 };
 
+// MATCH STATUSES
+const OPEN = 'OPEN';
+const ONGOING = 'ONGOING';
+const CLOSED = 'CLOSED';
+const MATCH_STATUSES = {
+    OPEN,
+    ONGOING,
+    CLOSED
+};
+
 const db = admin.firestore();
 
 const items = db.collection('items');
@@ -91,4 +101,5 @@ module.exports = {
     ADMIN_AUTH,
     ITEM_TYPES,
     ITEM_STATUSES,
+    MATCH_STATUSES
 };
